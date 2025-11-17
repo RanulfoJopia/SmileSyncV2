@@ -6,7 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\ReportController;
-
+use App\Http\Controllers\DoctorController;
 
 
 Route::get('/', function () {
@@ -45,12 +45,12 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy'); // ✅ Add this
 });
 // ✅ Record routes
-
-Route::middleware('auth')->group(function () {
-    Route::get('/records', [RecordController::class, 'index'])->name('records');
-    Route::post('/records/update', [RecordController::class, 'update']);
-    Route::delete('/records/{id}', [RecordController::class, 'delete'])->name('records.delete');
-});
+Route::put('/records/update', [RecordController::class, 'update'])->name('records.update');
+Route::get('/records', [RecordController::class, 'index'])->name('records');
+Route::post('/records/add', [RecordController::class, 'add'])->name('records.add');
+Route::post('/records/update', [RecordController::class, 'update'])->name('records.update');
+Route::delete('/records/delete/{id}', [RecordController::class, 'delete'])->name('records.delete');
 
 // Report routes
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+Route::resource('doctors', DoctorController::class);

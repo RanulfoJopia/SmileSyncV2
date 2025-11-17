@@ -105,4 +105,5 @@ class RecordController extends Controller
 
         return redirect()->route('records')->with('success', 'Record deleted successfully.');
     }
+    
 }

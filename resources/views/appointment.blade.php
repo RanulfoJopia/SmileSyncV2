@@ -81,6 +81,7 @@
       <h5 class="fw-bold text-primary">Navigation</h5>
       <ul class="nav flex-column mt-3">
         <li class="nav-item mb-2"><a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('doctors.index') }}"><i class="bi bi-person-badge me-2"></i>Manage Doctors</a></li>
         <li class="nav-item mb-2"><a class="nav-link active" href="{{ route('appointments.index') }}"><i class="bi bi-calendar-check me-2"></i> Appointments</a></li>
         <li class="nav-item mb-2"><a class="nav-link" href="/records"><i class="bi bi-people me-2"></i> Records</a></li>
         <li class="nav-item mb-2"><a class="nav-link" href="reports"><i class="bi bi-bar-chart-line me-2"></i> Reports</a></li>
@@ -170,7 +171,13 @@
                         </div>
                         <div class="mb-3">
                           <label class="form-label fw-semibold">Doctor</label>
-                          <input type="text" name="doctor" class="form-control" value="{{ $a->doctor }}">
+                          <select name="doctor" class="form-select" required>
+    <option value="">Select Doctor</option>
+    @foreach($doctors as $doc)
+        <option value="{{ $doc->name }}">{{ $doc->name }} - {{ $doc->specialization }}</option>
+    @endforeach
+</select>
+
                         </div>
                         <div class="mb-3">
                           <label class="form-label fw-semibold">Date</label>
@@ -246,10 +253,16 @@
             <input type="text" name="patient" class="form-control">
           </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Doctor</label>
-            <input type="text" name="doctor" class="form-control" required>
-          </div>
+         <div class="mb-3">
+  <label class="form-label fw-semibold">Doctor</label>
+  <select name="doctor" class="form-select" required>
+    <option value="">Select Doctor</option> @foreach($doctors as $doc)
+        <option value="{{ $doc->name }}">
+            {{ $doc->name }} - {{ $doc->specialization }}
+        </option>
+    @endforeach
+  </select>
+</div>
 
           <div class="row mb-3">
             <div class="col">

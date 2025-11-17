@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Appointment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AppointmentController extends Controller
 {
@@ -12,7 +13,13 @@ class AppointmentController extends Controller
     public function index()
     {
         $appointments = Appointment::where('user_id', Auth::id())->get();
-        return view('appointment', compact('appointments'));
+
+        // Fetch all doctors
+        $doctors = DB::table('doctors')->get();
+        // If you have "status" column, use only active doctors:
+        // $doctors = DB::table('doctors')->where('status', 'active')->get();
+
+        return view('appointment', compact('appointments', 'doctors'));
     }
 
 
@@ -43,12 +50,12 @@ class AppointmentController extends Controller
     }
 
 
-    // 🔧 FIXED: Missing update() method (This caused your error!)
+    // Update appointment
     public function update(Request $request, $id)
     {
         $appointment = Appointment::findOrFail($id);
 
-        // Check if user is allowed to update
+        // Prevent editing by other users
         if ($appointment->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
@@ -68,7 +75,6 @@ class AppointmentController extends Controller
             'time' => $request->time,
             'status' => $request->status,
             'notes' => $request->notes,
-            
         ]);
 
         return redirect()->route('appointments.index')
