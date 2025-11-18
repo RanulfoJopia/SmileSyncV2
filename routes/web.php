@@ -45,8 +45,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy'); // ✅ Add this
 });
 // ✅ Record routes
+Route::get('/records', [RecordController::class, 'index'])->name('records.index');
 Route::put('/records/update', [RecordController::class, 'update'])->name('records.update');
-Route::get('/records', [RecordController::class, 'index'])->name('records');
 Route::post('/records/add', [RecordController::class, 'add'])->name('records.add');
 Route::post('/records/update', [RecordController::class, 'update'])->name('records.update');
 Route::delete('/records/delete/{id}', [RecordController::class, 'delete'])->name('records.delete');

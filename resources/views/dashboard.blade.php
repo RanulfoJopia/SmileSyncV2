@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{-- ... (head content remains the same) ... --}}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmileSync – Dashboard</title>
@@ -17,16 +16,15 @@
         /* --- Navbar --- */
         .navbar { 
             background: #004c9e; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Added subtle shadow */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
         } 
         .navbar-brand { font-weight: 700; }
         .user-avatar { border: 2px solid white; }
 
         /* --- Sidebar --- */
-        /* Changed min-height: 100vh to ensure it spans the screen height below the navbar */
         .sidebar { 
             background: #ffffff; 
-            min-height: calc(100vh - 60px); /* Adjusted height to account for the navbar */
+            min-height: calc(100vh - 60px); 
             border-right: 1px solid #e0e4eb; 
             padding: 20px 0; 
             box-shadow: 2px 0 5px rgba(0,0,0,0.02); 
@@ -41,7 +39,7 @@
             font-weight: 600;
         }
 
-        /* --- Main Content Cards (rest of card styles remain the same) --- */
+        /* --- Main Content Cards --- */
         .card { 
             border-radius: 12px; 
             border: none;
@@ -50,7 +48,6 @@
         }
         .card:hover { transform: translateY(-3px); }
 
-        /* ... (rest of your styles) ... */
         .kpi-card { border-left: 5px solid; }
         .kpi-card h3 { font-size: 2.2rem; font-weight: 700; margin-top: 5px; }
         .kpi-card h6 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; }
@@ -170,8 +167,10 @@
                         <tbody>
                             @forelse ($appointments as $appt)
                                 <tr>
-                                    <td><i class="bi bi-person-circle me-1 text-muted"></i> {{ $appt->patient_name ?? '-' }}</td>
-                                    <td>Dr. {{ $appt->doctor_name ?? '-' }}</td>
+                                    {{-- ✅ FIX: Using the 'patient' column directly from the appointments table --}}
+                                    <td><i class="bi bi-person-circle me-1 text-muted"></i> {{ $appt->patient ?? '-' }}</td>
+                                    {{-- ✅ FIX: Using the 'doctor' column directly from the appointments table --}}
+                                    <td>Dr. {{ $appt->doctor ?? '-' }}</td>
                                     <td>{{ $appt->date }}</td>
                                     <td>{{ $appt->time }}</td>
                                     <td>
@@ -223,17 +222,19 @@
     });
 
     // --- Monthly Appointments Chart (Bar) ---
+    // NOTE: This chart uses static dummy data and should be updated via PHP like the other charts later.
     new Chart(document.getElementById('monthChart'), {
         type: 'bar',
         data: {
             labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+            data:[10,20,15,25,30,20],
             datasets: [{ 
                 label: 'Total Appointments', 
-                data:[10,20,15,25,30,20],
+                data:[10,20,15,25,30,20], // Static data placeholder
                 backgroundColor: primaryColor,
                 borderColor: primaryColor,
                 borderWidth: 1,
-                borderRadius: 4 // Slightly rounded bars
+                borderRadius: 4
             }]
         },
         options: {

@@ -85,9 +85,11 @@
             <h5 class="fw-bold mt-2 mb-4">Main Menu</h5>
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('doctors.index') }}"><i class="bi bi-person-badge me-2"></i>Manage Doctors</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('appointments.index') }}"><i class="bi bi-calendar-check me-2"></i>Appointments</a></li>
                 <li class="nav-item"><a class="nav-link" href="/records"><i class="bi bi-people me-2"></i>Records</a></li>
-                <li class="nav-item"><a class="nav-link active" href="reports"><i class="bi bi-bar-chart-line me-2"></i>Reports</a></li>
+                {{-- FIX: Using route('reports.index') for the main report link --}}
+                <li class="nav-item"><a class="nav-link active" href="{{ route('reports.index') }}"><i class="bi bi-bar-chart-line me-2"></i>Reports</a></li>
                 <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-bell me-2"></i>Notifications</a></li>
             </ul>
             <hr class="my-4 mx-3">
@@ -193,12 +195,16 @@
                             <div class="card-body p-0">
                                 <ul class="list-group list-group-flush">
                                     @php $rank = 1; @endphp
-                                    @foreach ($doctorCharts['appointmentCounts'] as $doctorName => $count)
-                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                            <strong>{{ $rank++ }}. {{ $doctorName }}</strong>
-                                            <span class="badge bg-primary rounded-pill">{{ $count }}</span>
-                                        </li>
-                                    @endforeach
+                                    @if(isset($doctorCharts['appointmentCounts']))
+                                        @foreach ($doctorCharts['appointmentCounts'] as $doctorName => $count)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <strong>{{ $rank++ }}. {{ $doctorName }}</strong>
+                                                <span class="badge bg-primary rounded-pill">{{ $count }}</span>
+                                            </li>
+                                        @endforeach
+                                    @else
+                                        <li class="list-group-item d-flex justify-content-center align-items-center px-0 text-muted">No doctor data available.</li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
@@ -224,7 +230,7 @@
     }
 
     // --- Report: Patient Visit Summary ---
-    @if ($reportType === 'patient_visits')
+    @if (isset($patientCharts) && $reportType === 'patient_visits')
         // Monthly Visits Chart (Bar)
         const monthlyCtx = document.getElementById('monthlyVisitsChart').getContext('2d');
         new Chart(monthlyCtx, {
@@ -267,7 +273,7 @@
     @endif
 
     // --- Report: Doctor Appointments Overview ---
-    @if ($reportType === 'doctor_overview')
+    @if (isset($doctorCharts) && $reportType === 'doctor_overview')
         const doctorCtx = document.getElementById('doctorAppointmentsChart').getContext('2d');
         const allMonths = @json($doctorCharts['months']);
         const allDoctors = @json($doctorCharts['doctors']);
@@ -277,7 +283,8 @@
 
         const doctorDatasets = allDoctors.map((doc, i)=>{
             const data = allMonths.map(m=>{
-                const match = allAppointments.find(v=>v.month===m && v.doctor===doc);
+                // Find the count for the specific doctor and month
+                const match = allAppointments.find(v=>v.month===m && v.doctor_name===doc);
                 return match ? match.count : 0;
             });
             return {

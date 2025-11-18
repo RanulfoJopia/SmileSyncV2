@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\Storage;
 
 class RecordController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Automatically add appointments to records if they don't exist
         $appointments = DB::table('appointments')
             ->whereNotIn('type', ['personal', 'meeting'])
             ->get();
@@ -30,13 +31,25 @@ class RecordController extends Controller
                     'type' => $a->type,
                     'date' => $a->date,
                     'time' => $a->time,
-                    'status' => $a->status,
                     'notes' => $a->notes,
+                    'document' => $a->document ?? null,
                 ]);
             }
         }
 
-        $records = DB::table('records')->orderBy('date', 'DESC')->get();
+        // SEARCH FUNCTIONALITY
+        $search = $request->input('search');
+        $records = DB::table('records');
+
+        if ($search) {
+            $records->where(function($query) use ($search) {
+                $query->where('patient', 'like', "%{$search}%")
+                      ->orWhere('doctor', 'like', "%{$search}%")
+                      ->orWhere('type', 'like', "%{$search}%");
+            });
+        }
+
+        $records = $records->orderBy('date', 'desc')->get();
 
         return view('records', compact('records'));
     }
@@ -56,12 +69,11 @@ class RecordController extends Controller
             'type' => $request->type,
             'date' => $request->date,
             'time' => $request->time,
-            'status' => $request->status,
             'notes' => $request->notes,
             'document' => $fileName
         ]);
 
-        return redirect()->route('records');
+        return redirect('/records');
     }
 
     public function update(Request $request)
@@ -81,12 +93,11 @@ class RecordController extends Controller
                 'type' => $request->type,
                 'date' => $request->date,
                 'time' => $request->time,
-                'status' => $request->status,
                 'notes' => $request->notes,
                 'document' => $fileName
             ]);
 
-        return redirect()->route('records');
+        return redirect('/records');
     }
 
     public function delete($id)
@@ -94,7 +105,7 @@ class RecordController extends Controller
         $record = DB::table('records')->where('id', $id)->first();
 
         if (!$record) {
-            return redirect()->route('records')->with('error', 'Record not found.');
+            return redirect('/records')->with('error', 'Record not found.');
         }
 
         if ($record->document && Storage::disk('public')->exists("uploads/$record->document")) {
@@ -103,7 +114,6 @@ class RecordController extends Controller
 
         DB::table('records')->where('id', $id)->delete();
 
-        return redirect()->route('records')->with('success', 'Record deleted successfully.');
+        return redirect('/records')->with('success', 'Record deleted successfully.');
     }
-    
 }

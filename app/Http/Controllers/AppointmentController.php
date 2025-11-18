@@ -12,12 +12,11 @@ class AppointmentController extends Controller
     // Show only appointments of the logged-in user
     public function index()
     {
+        // Fetch appointments where the current user is the scheduler (user_id)
         $appointments = Appointment::where('user_id', Auth::id())->get();
 
-        // Fetch all doctors
+        // Fetch all doctors for the modals
         $doctors = DB::table('doctors')->get();
-        // If you have "status" column, use only active doctors:
-        // $doctors = DB::table('doctors')->where('status', 'active')->get();
 
         return view('appointment', compact('appointments', 'doctors'));
     }
@@ -27,11 +26,13 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'type' => 'required',
-            'doctor' => 'required',
-            'date' => 'required|date',
+            'type' => 'required|string',
+            'patient' => 'nullable|string', // Added validation for patient field
+            'doctor' => 'required|string',
+            'date' => 'required|date|after_or_equal:today', // 🎯 FIX: Cannot be before today
             'time' => 'required',
-            'status' => 'required',
+            'status' => 'required|in:upcoming,complete,overdue', // Ensure status is valid
+            'notes' => 'nullable|string', // Added validation for notes field
         ]);
 
         Appointment::create([
@@ -61,15 +62,18 @@ class AppointmentController extends Controller
         }
 
         $request->validate([
-            'type' => 'required',
-            'doctor' => 'required',
-            'date' => 'required|date',
+            'type' => 'required|string',
+            'patient' => 'nullable|string', // Added validation for patient field
+            'doctor' => 'required|string',
+            'date' => 'required|date|after_or_equal:today', // 🎯 FIX: Cannot be before today
             'time' => 'required',
-            'status' => 'required',
+            'status' => 'required|in:upcoming,complete,overdue', // Ensure status is valid
+            'notes' => 'nullable|string', // Added validation for notes field
         ]);
 
         $appointment->update([
             'type' => $request->type,
+            'patient' => $request->patient, // Added patient update
             'doctor' => $request->doctor,
             'date' => $request->date,
             'time' => $request->time,
