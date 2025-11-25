@@ -51,10 +51,18 @@ Route::middleware(['auth'])->group(function () {
 });
 // ✅ Record routes
 Route::get('/records', [RecordController::class, 'index'])->name('records.index');
-Route::put('/records/update', [RecordController::class, 'update'])->name('records.update');
+
+// Use PUT for update
+Route::put('/records/update', [RecordController::class, 'update'])->name('records.update.put');
+
+// Use POST for add
 Route::post('/records/add', [RecordController::class, 'add'])->name('records.add');
-Route::post('/records/update', [RecordController::class, 'update'])->name('records.update');
+
+// Optional: If you need a POST update separately, give it a different name
+Route::post('/records/update', [RecordController::class, 'update'])->name('records.update.post');
+
 Route::delete('/records/delete/{id}', [RecordController::class, 'delete'])->name('records.delete');
+
 Route::get('/records/patient/{patient_name}', [RecordController::class, 'showPatient'])
     ->name('records.show_patient');
 
