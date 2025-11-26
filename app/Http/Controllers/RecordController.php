@@ -6,20 +6,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\RecordAdded;
-use App\Notifications\RecordEdited; 
+// use App\Notifications\RecordAdded; // Comment out for now
+// use App\Notifications\RecordEdited; // Comment out for now
 
 class RecordController extends Controller
 {
     /**
-     * Display a listing of the resource. Synchronizes appointments to records.
+     * Display a listing of the resource.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
     public function index(Request $request)
     {
-        // 1. --- APPOINTMENT SYNC LOGIC (Prevents Duplication) ---
+        // 1. --- COMMENTED OUT APPOINTMENT SYNC LOGIC (columns don't exist) ---
+        /*
         $appointments = DB::table('appointments')
             ->whereNotIn('type', ['personal', 'meeting'])
             ->where('user_id', Auth::id())
@@ -54,18 +55,20 @@ class RecordController extends Controller
                     ->update($data);
             }
         }
+        */
 
         // 2. --- SEARCH AND SORT FUNCTIONALITY ---
         $search = $request->input('search');
         
-        $query = DB::table('records')->where('user_id', Auth::id());
+        // REMOVED: ->where('user_id', Auth::id()) - column doesn't exist
+        $query = DB::table('records');
 
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('patient', 'like', "%{$search}%")
-                      ->orWhere('doctor', 'like', "%{$search}%")
-                      ->orWhere('type', 'like', "%{$search}%")
-                      ->orWhere('notes', 'like', "%{$search}%");
+                  ->orWhere('doctor', 'like', "%{$search}%")
+                  ->orWhere('type', 'like', "%{$search}%")
+                  ->orWhere('notes', 'like', "%{$search}%");
             });
         }
 
@@ -82,24 +85,26 @@ class RecordController extends Controller
      */
     public function showPatient($patient_name)
     {
-        // 1. Fetch all medical records for the specified patient name for the authenticated user
+        // 1. Fetch all medical records for the specified patient name
+        // REMOVED: ->where('user_id', Auth::id()) - column doesn't exist
         $patientRecords = DB::table('records')
-            ->where('user_id', Auth::id())
             ->where('patient', $patient_name)
             ->orderBy('date', 'desc')
             ->get();
             
-        // 2. Fetch patient profile details from the separate 'patients' table
+        // 2. Commented out patients table reference (table doesn't exist)
+        $patientProfile = null;
+        /*
         $patientProfile = DB::table('patients')
             ->where('user_id', Auth::id())
             ->where('patient_name', $patient_name)
             ->first();
+        */
 
-        // Pass both records and profile to the view
         return view('patient_profile', [
             'patient_name' => $patient_name,
             'records' => $patientRecords,
-            'profile' => $patientProfile, // This is the new data passed
+            'profile' => $patientProfile,
         ]);
     }
 
@@ -118,26 +123,30 @@ class RecordController extends Controller
             $request->file('document')->storeAs('uploads', $fileName, 'public');
         }
 
+        // REMOVED: user_id and appointment_id columns (don't exist)
         $recordId = DB::table('records')->insertGetId([
-            'user_id' => Auth::id(),
-            'appointment_id' => null,
             'patient' => $request->patient_name,
             'doctor' => $request->doctor_name,
             'type' => $request->type,
             'date' => $request->date,
             'time' => $request->time,
+            'status' => 'upcoming', // Added status field
             'notes' => $request->notes,
             'document' => $fileName,
+            'document_path' => null, // Added document_path field
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         $newRecord = DB::table('records')->where('id', $recordId)->first();
 
+        // Commented out notifications (table doesn't exist)
+        /*
         if ($newRecord) {
             $userName = Auth::user()->name ?? 'A user';
             Auth::user()->notify(new RecordAdded($newRecord, $userName));
         }
+        */
 
         return redirect('/records')->with('success', 'Record added successfully!');
     }
@@ -152,13 +161,13 @@ class RecordController extends Controller
     {
         $recordId = $request->id;
         
+        // REMOVED: ->where('user_id', Auth::id()) - column doesn't exist
         $oldRecord = DB::table('records')
             ->where('id', $recordId)
-            ->where('user_id', Auth::id())
             ->first();
 
         if (!$oldRecord) {
-             return redirect('/records')->with('error', 'Record not found or unauthorized.');
+             return redirect('/records')->with('error', 'Record not found.');
         }
 
         $fileName = $oldRecord->document;
@@ -172,9 +181,9 @@ class RecordController extends Controller
             $request->file('document')->storeAs('uploads', $fileName, 'public');
         }
 
+        // REMOVED: ->where('user_id', Auth::id()) - column doesn't exist
         DB::table('records')
             ->where('id', $recordId)
-            ->where('user_id', Auth::id())
             ->update([
                 'patient' => $request->patient_name,
                 'doctor' => $request->doctor_name,
@@ -188,10 +197,13 @@ class RecordController extends Controller
 
         $updatedRecord = DB::table('records')->where('id', $recordId)->first();
 
+        // Commented out notifications (table doesn't exist)
+        /*
         if ($updatedRecord) {
             $userName = Auth::user()->name ?? 'A user';
             Auth::user()->notify(new RecordEdited($updatedRecord, $userName));
         }
+        */
 
         return redirect('/records')->with('success', 'Record updated successfully!');
     }
@@ -204,22 +216,22 @@ class RecordController extends Controller
      */
     public function delete($id)
     {
+        // REMOVED: ->where('user_id', Auth::id()) - column doesn't exist
         $record = DB::table('records')
             ->where('id', $id)
-            ->where('user_id', Auth::id())
             ->first();
 
         if (!$record) {
-            return redirect('/records')->with('error', 'Record not found or unauthorized.');
+            return redirect('/records')->with('error', 'Record not found.');
         }
 
         if ($record->document && Storage::disk('public')->exists("uploads/$record->document")) {
             Storage::disk('public')->delete("uploads/$record->document");
         }
 
+        // REMOVED: ->where('user_id', Auth::id()) - column doesn't exist
         DB::table('records')
             ->where('id', $id)
-            ->where('user_id', Auth::id())
             ->delete();
 
         return redirect('/records')->with('success', 'Record deleted successfully.');
