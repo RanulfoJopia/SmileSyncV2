@@ -62,13 +62,15 @@
     <div class="ms-auto">
         <div class="dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="text-white fw-semibold me-2 d-none d-md-inline">Welcome, {{ Auth::user()->name ?? 'Admin User' }}</span>
-                <img src="https://i.pravatar.cc/40?img=6" class="rounded-circle user-avatar">
+                {{-- Name visible on desktop --}}
+                
+                {{-- Avatar --}}
+                <img src="{{ asset('assets/avatar.png') }}" class="rounded-circle user-avatar">
             </a>
             
             <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="navbarDropdown">
                 <li class="dropdown-header">Logged in as:</li>
-                <li class="dropdown-header fw-bold text-primary">{{ Auth::user()->name ?? 'Admin User' }}</li>
+                <li class="dropdown-header fw-bold text-primary">Admin User</li>
                 <li><hr class="dropdown-divider"></li>
                 
                 <li>
@@ -87,7 +89,7 @@
     <div class="row g-0">
         
         <div class="col-auto col-md-2 sidebar">
-            <h5 class="fw-bold mt-2 mb-4">Navigation</h5>
+            <h5 class="fw-bold mt-2 mb-4">Main Menu</h5>
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('doctors.index') }}"><i class="bi bi-person-badge me-2"></i>Manage Doctors</a></li>

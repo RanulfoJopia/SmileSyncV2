@@ -18,7 +18,7 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
     } 
     .navbar-brand { font-weight: 700; }
-    .user-avatar { border: 2px solid white; }
+    .user-avatar { border: 2px solid white; width: 40px; height: 40px; object-fit: cover; } 
 
     /* --- Sidebar --- */
     .sidebar { 
@@ -69,11 +69,33 @@
 <body>
 
 <nav class="navbar navbar-expand-lg px-4 sticky-top">
-    <a class="navbar-brand fw-bold text-white"><i class="bi bi-bar-chart-fill me-2"></i> SmileSync Reports</a>
+    <a class="navbar-brand fw-bold text-white" href="/dashboard"><i class="bi bi-people-fill me-2"></i> SmileSync Reports</a>
 
-    <div class="ms-auto d-flex align-items-center">
-        <span class="text-white fw-semibold me-3 d-none d-md-inline">Welcome, Admin</span> 
-        <img src="https://i.pravatar.cc/40?img=6" class="rounded-circle user-avatar">
+    {{-- UPDATED Dropdown Menu for User and Logout (Directly copied from dashboard code) --}}
+    <div class="ms-auto">
+        <div class="dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{-- Name visible on desktop --}}
+                
+                {{-- Avatar --}}
+                <img src="{{ asset('assets/avatar.png') }}" class="rounded-circle user-avatar">
+            </a>
+            
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="navbarDropdown">
+                <li class="dropdown-header">Logged in as:</li>
+                <li class="dropdown-header fw-bold text-primary">Admin User</li>
+                <li><hr class="dropdown-divider"></li>
+                
+                <li>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button class="dropdown-item" type="submit">
+                            <i class="bi bi-box-arrow-right me-2 text-danger"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 

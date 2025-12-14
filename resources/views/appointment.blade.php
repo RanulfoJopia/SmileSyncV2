@@ -10,48 +10,75 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
 
     <style>
-        :root{
-            --primary:#004c9e;
-            --muted:#f0f2f5;
-        }
-        body { background: var(--muted); font-family: 'Poppins', sans-serif; }
-        .navbar{ background:var(--primary); box-shadow:0 2px 6px rgba(0,0,0,0.08); }
-        .navbar-brand{ font-weight:700; color:#fff; }
-        .user-avatar{ width:40px; height:40px; object-fit:cover; border-radius:50%; border:2px solid #fff;}
-        .sidebar{ background:#fff; min-height:calc(100vh - 60px); border-right:1px solid #e9eef6; padding:20px 0; }
-        .sidebar .nav-link{ color:#333; padding:10px 14px; border-radius:8px; margin-bottom:6px; }
-        .sidebar .nav-link.active, .sidebar .nav-link:hover{ background: #0069d9; color:#fff !important; font-weight:600; }
+        /* --- GENERAL & SIDEBAR STYLES (FROM ORIGINAL RECORDS PAGE) --- */
+        html, body, .container-fluid, .row { height: 100%; }
+        body { background: #f0f2f5; font-family: 'Poppins', sans-serif; } /* Updated body background to match dashboard */
 
-        .card-main{ border-radius:12px; box-shadow:0 6px 20px rgba(14,30,60,0.06); }
-        .btn-dental{ background:var(--primary); color:#fff; border:none; }
-        .btn-dental:hover{ background:#0069d9; color:#fff; }
-        .fc .fc-daygrid-event .fc-event-title { white-space:normal; }
-        #appointmentCalendar{ max-width:100%; }
-
-        /* Small screens: stack calendar + list */
-        @media (max-width: 991px) {
-            .two-column { flex-direction: column; gap: 1rem; }
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 60px); /* Adjusted height to account for the sticky navbar */
+            border-right: 1px solid #e0e4eb;
+            padding: 20px 0; /* Updated padding to match dashboard sidebar */
+            box-shadow: 2px 0 5px rgba(0,0,0,0.02);
+            position: sticky;
+            top: 60px; /* Offset by the navbar height */
         }
+        .sidebar h5 { color: #004c9e; padding: 0 20px; }
+        .sidebar .nav-item { padding: 0 10px; }
+        .sidebar .nav-link { 
+            color: #333; 
+            padding: 12px 15px; /* Updated padding to match dashboard sidebar */
+            border-radius: 8px; /* Updated border-radius to match dashboard sidebar */
+            margin-bottom: 5px; 
+            display: flex; 
+            align-items: center; 
+            transition: all .2s; 
+        }
+        .sidebar .nav-link i { font-size: 1.1rem; width: 25px; }
+        .sidebar .nav-link.active,
+        .sidebar .nav-link:hover {
+            background-color: #0069d9;
+            color: #fff !important;
+            font-weight: 600; /* Updated font-weight to match dashboard sidebar */
+        }
+        /* Style for the clickable patient link */
+        .patient-link:hover {
+            text-decoration: underline !important;
+        }
+
+        /* --- NAVBAR STYLES (FROM DASHBOARD CODE) --- */
+        .navbar { 
+            background: #004c9e; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        } 
+        .navbar-brand { font-weight: 700; }
+        .user-avatar { border: 2px solid white; width: 40px; height: 40px; object-fit: cover; } 
     </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg sticky-top px-4 py-2">
-    <a class="navbar-brand d-flex align-items-center" href="/dashboard">
-        <i class="bi bi-person-fill-gear me-2"></i> SmileSync
-    </a>
+    <a class="navbar-brand fw-bold text-white"><i class="bi bi-person-fill-gear me-2"></i> SmileSync Appointment</a>
 
-    <div class="ms-auto d-flex align-items-center">
-        <span class="text-white me-3 d-none d-md-inline">Welcome, {{ Auth::user()->name ?? 'User' }}</span>
-        <img src="https://i.pravatar.cc/40?u={{ Auth::id() }}" alt="avatar" class="user-avatar me-3">
+    <div class="ms-auto">
         <div class="dropdown">
-            <a class="text-white dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"></a>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li class="dropdown-header fw-bold">{{ Auth::user()->name ?? 'User' }}</li>
+            <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{-- Name visible on desktop --}}
+                
+                {{-- Avatar --}}
+                <img src="{{ asset('assets/avatar.png') }}" class="rounded-circle user-avatar">
+            </a>
+            
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="navbarDropdown">
+                <li class="dropdown-header">Logged in as:</li>
+                <li class="dropdown-header fw-bold text-primary">Admin User</li>
                 <li><hr class="dropdown-divider"></li>
+                
                 <li>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button class="dropdown-item" type="submit"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</button>
+                        <button class="dropdown-item" type="submit">
+                            <i class="bi bi-box-arrow-right me-2 text-danger"></i> Logout
+                        </button>
                     </form>
                 </li>
             </ul>

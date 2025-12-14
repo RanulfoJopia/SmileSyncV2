@@ -64,9 +64,9 @@
         <div class="dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 {{-- Name visible on desktop --}}
-                <span class="text-white fw-semibold me-2 d-none d-md-inline">Welcome, Admin User</span>
+                
                 {{-- Avatar --}}
-                <img src="https://i.pravatar.cc/40?img=6" class="rounded-circle user-avatar">
+                <img src="{{ asset('assets/avatar.png') }}" class="rounded-circle user-avatar">
             </a>
             
             <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="navbarDropdown">
