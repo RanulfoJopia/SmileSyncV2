@@ -8,7 +8,9 @@ use App\Http\Controllers\RecordController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\PatientController;
+
 
 
 // --- PUBLIC ROUTES (Landing, Auth) ---

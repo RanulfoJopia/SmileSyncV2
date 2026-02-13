@@ -10,16 +10,12 @@ use App\Models\Record;
 
 class RecordController extends Controller
 {
-    /**
-     * Display all records for the currently logged-in user with search.
-     */
     public function index(Request $request)
     {
         $userId = Auth::id();
-
         $search = $request->input('search');
         
-        $query = Record::where('user_id', $userId); 
+        $query = Record::where('user_id', $userId);
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -31,27 +27,23 @@ class RecordController extends Controller
         }
 
         $records = $query->orderBy('date', 'desc')->get();
-        
-        $doctors = DB::table('doctors')->get(); 
-        
-        return view('records', compact('records', 'doctors'));
+        $doctors = DB::table('doctors')->get();
+        $patients = DB::table('patients')
+            ->where('user_id', $userId)
+            ->select('patient_name as name', 'id')
+            ->get();
+
+        return view('records', compact('records', 'doctors', 'patients'));
     }
 
-    /**
-     * Show patient profile + records
-     */
     public function showPatient($patient_name)
     {
         $userId = Auth::id();
         $doctors = DB::table('doctors')->get();
-
-        // 🟢 FIX: Load the correct patient profile from 'patients' table
         $profile = DB::table('patients')
             ->where('user_id', $userId)
             ->where('patient_name', $patient_name)
             ->first();
-
-        // Patient-related appointment records
         $patientRecords = DB::table('records')
             ->where('user_id', $userId)
             ->where('patient', $patient_name)
@@ -62,13 +54,10 @@ class RecordController extends Controller
             'patient_name' => $patient_name,
             'records' => $patientRecords,
             'doctors' => $doctors,
-            'profile' => $profile, // 🟢 NOW IT SHOWS THE UPDATED PROFILE
+            'profile' => $profile,
         ]);
     }
 
-    /**
-     * Add a new record.
-     */
     public function add(Request $request)
     {
         $request->validate([
@@ -78,7 +67,7 @@ class RecordController extends Controller
             'time' => 'required',
             'type' => 'required|string',
             'notes' => 'nullable|string',
-            'document' => 'nullable|file|max:2048', 
+            'document' => 'nullable|file|max:2048',
         ]);
 
         $fileName = null;
@@ -88,16 +77,16 @@ class RecordController extends Controller
         }
 
         DB::table('records')->insert([
-            'user_id' => Auth::id(), 
+            'user_id' => Auth::id(),
             'patient' => $request->patient_name,
             'doctor' => $request->doctor_name,
             'type' => $request->type,
             'date' => $request->date,
             'time' => $request->time,
-            'status' => 'complete', 
+            'status' => 'complete',
             'notes' => $request->notes,
             'document' => $fileName,
-            'document_path' => null, 
+            'document_path' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -105,17 +94,13 @@ class RecordController extends Controller
         return redirect('/records')->with('success', 'Record added successfully!');
     }
 
-    /**
-     * Update an existing record.
-     */
     public function update(Request $request)
     {
         $recordId = $request->id;
         $userId = Auth::id();
-        
         $oldRecord = DB::table('records')
                        ->where('id', $recordId)
-                       ->where('user_id', $userId) 
+                       ->where('user_id', $userId)
                        ->first(); 
 
         if (!$oldRecord) {
@@ -133,7 +118,7 @@ class RecordController extends Controller
 
         DB::table('records')
             ->where('id', $recordId)
-            ->where('user_id', $userId) 
+            ->where('user_id', $userId)
             ->update([
                 'patient' => $request->patient_name,
                 'doctor' => $request->doctor_name,
@@ -149,13 +134,9 @@ class RecordController extends Controller
         return redirect('/records')->with('success', 'Record updated successfully!');
     }
 
-    /**
-     * Delete an existing record.
-     */
     public function delete($id)
     {
         $userId = Auth::id();
-
         $record = DB::table('records')
                      ->where('id', $id)
                      ->where('user_id', $userId) 

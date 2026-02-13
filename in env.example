@@ -1,0 +1,70 @@
+warning: in the working copy of '.env.example', CRLF will be replaced by LF the next time Git touches it
+[1mdiff --git a/.env.example b/.env.example[m
+[1mindex 2bb6c53..a490b20 100644[m
+[1m--- a/.env.example[m
+[1m+++ b/.env.example[m
+[36m@@ -1,9 +1,9 @@[m
+[31m-# Application[m
+[32m+[m[32m# Application Updated it[m
+ APP_NAME=SmileSync[m
+ APP_ENV=production[m
+[31m-APP_KEY=base64:YourBase64GeneratedKeyHere[m
+[32m+[m[32mAPP_KEY=[m
+ APP_DEBUG=false[m
+[31m-APP_URL=https://your-app.up.railway.app[m
+[32m+[m[32mAPP_URL=https://smilesync-production.up.railway.app[m
+ [m
+ APP_LOCALE=en[m
+ APP_FALLBACK_LOCALE=en[m
+[36m@@ -15,15 +15,13 @@[m [mBCRYPT_ROUNDS=12[m
+ LOG_CHANNEL=stack[m
+ LOG_LEVEL=debug[m
+ [m
+[31m-# Database (replace with your Railway MySQL credentials)[m
+[32m+[m[32m# Database (matches Railway variables)[m
+ DB_CONNECTION=mysql[m
+[31m-DB_HOST=${MYSQLHOST}[m
+[31m-DB_PORT=${MYSQLPORT}[m
+[31m-DB_DATABASE=${MYSQLDATABASE}[m
+[31m-DB_USERNAME=${MYSQLUSER}[m
+[31m-DB_PASSWORD=${MYSQLPASSWORD}[m
+[31m-[m
+[31m-[m
+[32m+[m[32mDB_HOST=mysql.railway.internal[m
+[32m+[m[32mDB_PORT=3306[m
+[32m+[m[32mDB_DATABASE=railway[m
+[32m+[m[32mDB_USERNAME=root[m
+[32m+[m[32mDB_PASSWORD=bNgqczvdVCeKWCdhhhQUHLMnSCBomdrC[m
+ [m
+ # Session[m
+ SESSION_DRIVER=file[m
+[36m@@ -38,21 +36,21 @@[m [mCACHE_STORE=database[m
+ [m
+ # Redis (optional)[m
+ REDIS_CLIENT=phpredis[m
+[31m-REDIS_HOST=${REDIS_HOST}      [m
+[31m-REDIS_PORT=${REDIS_PORT}     [m
+[31m-REDIS_PASSWORD=${REDIS_PASSWORD}[m
+[32m+[m[32mREDIS_HOST=[m
+[32m+[m[32mREDIS_PORT=[m
+[32m+[m[32mREDIS_PASSWORD=[m
+ [m
+ # Mail (optional)[m
+ MAIL_MAILER=smtp[m
+[31m-MAIL_HOST=${MAIL_HOST}      [m
+[31m-MAIL_PORT=${MAIL_PORT}        [m
+[31m-MAIL_USERNAME=${MAIL_USERNAME}[m
+[31m-MAIL_PASSWORD=${MAIL_PASSWORD}[m
+[32m+[m[32mMAIL_HOST=[m
+[32m+[m[32mMAIL_PORT=[m
+[32m+[m[32mMAIL_USERNAME=[m
+[32m+[m[32mMAIL_PASSWORD=[m
+ MAIL_ENCRYPTION=tls[m
+ MAIL_FROM_ADDRESS="hello@example.com"[m
+ MAIL_FROM_NAME="${APP_NAME}"[m
+ [m
+[31m-# AWS S3 (optional)[m
+[32m+[m[32m# AWS (optional)[m
+ AWS_ACCESS_KEY_ID=[m
+ AWS_SECRET_ACCESS_KEY=[m
+ AWS_DEFAULT_REGION=us-east-1[m
